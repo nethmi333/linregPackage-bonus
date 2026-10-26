@@ -1,0 +1,63 @@
+---
+title: "Ridge Regression Package Vignette"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{ridgereg}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(linregPackage)
+library(linregPackage)
+library(mlbench)
+library(caret)
+library(dplyr)
+
+data("BostonHousing")
+
+set.seed(123)
+train_index <- createDataPartition(BostonHousing$medv, p = 0.7, list = FALSE)
+train_data <- BostonHousing[train_index, ]
+test_data  <- BostonHousing[-train_index, ]
+
+# 1. Standard Linear Model (lm)
+ctrl <- trainControl(method = "cv", number = 10)
+
+model_lm <- train(medv ~ ., data = train_data, method = "lm", trControl = ctrl)
+
+# 2. Custom Ridge Regression Model
+# Define a custom caret model list for ridgereg if required, or fit directly:
+# For simplicity, we can evaluate test RMSE directly using our ridgereg function:
+lambda_grid <- c(0, 1, 5, 10, 50, 100)
+best_rmse <- Inf
+best_lambda <- 0
+best_model <- NULL
+
+for (lam in lambda_grid) {
+  fit <- ridgereg(medv ~ ., data = train_data, lambda = lam)
+  # Predict on test set
+  # Create model frame for test data
+  tt <- delete.response(terms(medv ~ ., data = train_data))
+  mf_test <- model.frame(tt, test_data)
+  X_test <- model.matrix(tt, mf_test)
+  preds <- as.vector(X_test %*% fit$coefficients)
+  
+  rmse <- sqrt(mean((test_data$medv - preds)^2))
+  if (rmse < best_rmse) {
+    best_rmse <- rmse
+    best_lambda <- lam
+    best_model <- fit
+  }
+}
+
+cat("Best Lambda found via grid search:", best_lambda, "\n")
+cat("Best Ridge Test RMSE:", best_rmse, "\n")
+```

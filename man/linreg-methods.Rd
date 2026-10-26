@@ -28,7 +28,7 @@ pred(object, ...)
 \arguments{
 \item{x, object}{An object of class \code{linreg}.}
 
-\item{...}{Further arguments (currently unused).}
+\item{...}{Further arguments.}
 }
 \value{
 \code{print}, \code{summary} and \code{plot} are called for their

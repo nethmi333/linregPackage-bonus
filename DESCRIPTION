@@ -11,7 +11,11 @@ Config/roxygen2/version: 8.1.0
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 Imports: 
+    caret,
+    dplyr,
     ggplot2,
+    mlbench,
+    nycflights13,
     stats,
     utils
 Suggests: 
@@ -20,4 +24,3 @@ Suggests:
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 VignetteBuilder: knitr
-RoxygenNote: 7.3.3
